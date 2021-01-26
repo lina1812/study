@@ -8,7 +8,6 @@ ideal_weight = (height.to_i - 110) * 1.15
 
 if ideal_weight < 0.0
   puts "#{name},  Ваш вес уже оптимальный"
-  else
-    puts "#{name}, Ваш оптимальный вес #{ideal_weight}"
+else
+  puts "#{name}, Ваш оптимальный вес #{ideal_weight}"
 end
-  
