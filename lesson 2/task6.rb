@@ -24,4 +24,4 @@ for i in 0..input.size - 2
 end
 
 puts shopping_basket.inspect
-puts "Общая ссума покупок #{total}"
+puts "Общая сумма покупок #{total}"
