@@ -2,37 +2,37 @@
 
 # All route logic
 class Route
-  attr_accessor :route
+  attr_accessor :stations
 
   def initialize(start, finish)
-    @route = [start, finish]
+    @stations = [start, finish]
   end
 
   def add_station(station, place)
-    if @route.include?(station)
+    if @stations.include?(station)
       puts 'Такая станция уже есть в маршруте'
-    elsif place != 0 && place < @route.size
-      @route.insert(place, station)
+    elsif place != 0 && place < @stations.size
+      @stations.insert(place, station)
     else
       puts 'Нельзя добавить станцию на эту позицию'
     end
   end
 
   def delete_station(station)
-    if [@route.first, @route.last].include?(station)
+    if [@stations.first, @stations.last].include?(station)
       puts 'Нельзя удалить начальную или конечную станцию'
-    elsif @route.include?(station)
-      @route.delete(station)
+    elsif @stations.include?(station)
+      @stations.delete(station)
     else
       puts 'Такой станции нет в марштуре'
     end
   end
 
   def next_station(current_station)
-    route[route.index(current_station) + 1] if current_station != route.last && route.include?(current_station)
+    @stations[@stations.index(current_station) + 1] if current_station != @stations.last && @stations.include?(current_station)
   end
 
   def previous_station(current_station)
-    route[route.index(current_station) - 1] if current_station != route.first && route.include?(current_station)
+    @stations[@stations.index(current_station) - 1] if current_station != @stations.first && @stations.include?(current_station)
   end
 end

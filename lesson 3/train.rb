@@ -33,7 +33,7 @@ class Train
 
   def train_route(route)
     @route = route
-    moving_to(@route.route.first)
+    moving_to(@route.stations.first)
   end
 
   def moving_forward

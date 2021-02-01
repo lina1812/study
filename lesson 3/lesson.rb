@@ -35,15 +35,6 @@ train.speed = 10
 train.add_wagon
 train.delete_wagon
 
-
-
 train.stop
 train.add_wagon
 train.delete_wagon
-
-
-
-
-
-
-
