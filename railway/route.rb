@@ -29,10 +29,14 @@ class Route
   end
 
   def next_station(current_station)
-    @stations[@stations.index(current_station) + 1] if current_station != @stations.last && @stations.include?(current_station)
+    if current_station != @stations.last && @stations.include?(current_station)
+      @stations[@stations.index(current_station) + 1]
+    end
   end
 
   def previous_station(current_station)
-    @stations[@stations.index(current_station) - 1] if current_station != @stations.first && @stations.include?(current_station)
+    if current_station != @stations.first && @stations.include?(current_station)
+      @stations[@stations.index(current_station) - 1]
+    end
   end
 end
