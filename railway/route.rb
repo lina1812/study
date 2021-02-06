@@ -3,9 +3,11 @@
 # All route logic
 class Route
   attr_accessor :stations
+  include InstanceCounter
 
   def initialize(start, finish)
     @stations = [start, finish]
+    register_instance
   end
 
   def add_station(station, place)

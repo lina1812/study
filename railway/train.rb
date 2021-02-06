@@ -1,15 +1,24 @@
 # frozen_string_literal: true
 
+require './manufacturer.rb'
+require './instance_counter.rb'
+
 # All train logic
 class Train
+  include Manufacturer
+  include InstanceCounter
+
   attr_accessor :speed
   attr_reader :route, :current_station, :type, :number, :wagons
+
+  @@trains = []
 
   def initialize(number)
     @number = number
     @type = initial_type
     @wagons = []
     @speed = 0
+    @@trains << self
   end
 
   def stop
@@ -69,6 +78,14 @@ class Train
   def previous_station
     route_previous = @route.previous_station(current_station)
     route_previous || puts('Поезд на начальной станции')
+  end
+
+  def self.find(number)
+    @@trains.find { |train| train.number == number }
+  end
+
+  def self.all
+    @@trains
   end
 
   def print
