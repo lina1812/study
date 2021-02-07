@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Passenger train description
+
 class PassengerTrain < Train
   def initialize(number)
     super

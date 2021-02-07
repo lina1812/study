@@ -230,16 +230,15 @@ class Menu
 end
 
 # testing data
-#   puts $station.inspect
-#   puts $stations.inspect
-#   puts $train.inspect
-#   puts $trains.inspect
-#   puts $route.inspect
-#   puts $routs.inspect
-#   puts $wagon.inspect
-#   puts $wagons.inspect
-#
-#
+#  puts $station.inspect
+#  puts $stations.inspect
+#  puts $train.inspect
+#  puts $trains.inspect
+#  puts $route.inspect
+#  puts $routs.inspect
+#  puts $wagon.inspect
+#  puts $wagons.inspect
+
 #  station1 = Station.new('station1')
 #  station2 = Station.new('station2')
 #  station3 = Station.new('station3')
@@ -289,9 +288,9 @@ end
 #  train1.add_wagon(passenger_wagon2)
 #  train.add_wagon(cargo_wagon1)
 #
-#  train.add_manufacturer('volvo')
+#  train.manufacturer = 'volvo'
 #
-#  puts train.manufacturer_name
+#  puts train.manufacturer
 #
 #  puts Train.find('train')
 #
