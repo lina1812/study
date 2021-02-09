@@ -10,12 +10,11 @@ require './cargo_train.rb'
 require './wagon.rb'
 
 # methods for interface
+
 class Menu
   def initialize
     @station = nil
-    @stations = []
     @train = nil
-    @trains = []
     @route = nil
     @routs = []
     @wagon = nil
@@ -66,7 +65,6 @@ class Menu
     puts 'Введите название станции'
     name = gets.chomp
     @station = Station.new(name)
-    @stations << @station
   end
 
   def create_train
@@ -78,10 +76,8 @@ class Menu
     case type
     when 1
       @train = PassengerTrain.new(number)
-      @trains << @train
     when 2
       @train = CargoTrain.new(number)
-      @trains << @train
     end
   end
 
@@ -89,11 +85,11 @@ class Menu
     puts 'Введите номер станции из списка для начальной станции'
     print_stations
     number = gets.chomp.to_i
-    start = @stations[number - 1]
+    start = Station.all[number - 1]
     puts 'Введите номер станции из списка для конечной станции'
     print_stations
     number = gets.chomp.to_i
-    finish = @stations[number - 1]
+    finish = Station.all[number - 1]
     @route = Route.new(start, finish)
     @routs << @route
   end
@@ -131,7 +127,7 @@ class Menu
     puts 'Введите номер станции из списка для начальной станции'
     print_stations
     number = gets.chomp.to_i
-    station_name = @stations[number - 1]
+    station_name = Station.all[number - 1]
     puts 'Введите номер станции, на которую ее добавить'
     number = gets.chomp.to_i
     @route.add_station(station_name, number)
@@ -141,7 +137,7 @@ class Menu
     puts 'Введите номер станции из списка для начальной станции'
     print_stations
     number = gets.chomp.to_i
-    station_name = @stations[number - 1]
+    station_name = Station.all[number - 1]
     @route.delete_station(station_name)
   end
 
@@ -170,13 +166,13 @@ class Menu
   def select_station
     puts 'Введите номер станции из списка, которую хотите выбрать'
     print_stations
-    @station = @stations[gets.chomp.to_i - 1]
+    @station = Station.all[gets.chomp.to_i - 1]
   end
 
   def select_train
     puts 'Введите номер поезда из списка, который хотите выбрать'
     print_trains
-    @train = @trains[gets.chomp.to_i - 1]
+    @train = Train.all[gets.chomp.to_i - 1]
   end
 
   def select_route
@@ -192,16 +188,16 @@ class Menu
   end
 
   def print_stations
-    @stations.each.with_index(1) { |station, i| puts "#{i} #{station.name}" }
+    Station.all.each.with_index(1) { |station, i| puts "#{i} #{station.name}" }
   end
 
-  def print_trains(trains = @trains)
+  def print_trains(trains = Train.all)
     trains.each { |train| puts train.number }
   end
 
   def list_of_train
     puts 'На станции сейчас следующие поезда'
-    @stations.each do |station|
+    Station.all.each do |station|
       print_trains(station.trains)
     end
   end
@@ -232,65 +228,72 @@ class Menu
     puts 'Выберите вариант: '
   end
 end
+
 # testing data
-#   puts $station.inspect
-#   puts $stations.inspect
-#   puts $train.inspect
-#   puts $trains.inspect
-#   puts $route.inspect
-#   puts $routs.inspect
-#   puts $wagon.inspect
-#   puts $wagons.inspect
+#  puts $station.inspect
+#  puts $stations.inspect
+#  puts $train.inspect
+#  puts $trains.inspect
+#  puts $route.inspect
+#  puts $routs.inspect
+#  puts $wagon.inspect
+#  puts $wagons.inspect
+
+#  station1 = Station.new('station1')
+#  station2 = Station.new('station2')
+#  station3 = Station.new('station3')
+#
+#  route1 = Route.new(station1, station2)
+#  route1.add_station(station3, 1)
+#
+#  train = CargoTrain.new('train')
+#  train1 = PassengerTrain.new('train1')
+#  train2 = PassengerTrain.new('train2')
+#  train3 = CargoTrain.new('train3')
+#
+#  cargo_wagon1 = Wagon.new('1', :cargo)
+#  cargo_wagon2 = Wagon.new('2', :cargo)
+#  passenger_wagon1 = Wagon.new('3', :passenger)
+#  passenger_wagon2 = Wagon.new('4', :passenger)
 #
 #
+#  train1.train_route(route1)
+#  train2.train_route(route1)
+#  train3.train_route(route1)
 #
-# station1 = Station.new('station1')
-# station2 = Station.new('station2')
-# station3 = Station.new('station3')
+#  train2.moving_forward
+#  train1.moving_forward
+#  train1.moving_forward
+#  train1.moving_forward
+#  train1.moving_back
+#  train1.moving_back
+#  train1.moving_back
 #
-# route1 = Route.new(station1, station2)
-# route1.add_station(station3, 1)
+#  train.speed
 #
-# train = CargoTrain.new('train')
-# train1 = PassengerTrain.new('train1')
-# train2 = PassengerTrain.new('train2')
-# train3 = CargoTrain.new('train3')
+#  train.stop
+#  train.speed = 10
+#  train.add_wagon(cargo_wagon1)
+#  train.add_wagon(passenger_wagon2)
+#  train.delete_wagon(cargo_wagon1)
 #
-# cargo_wagon1 = Wagon.new('1', :cargo)
-# cargo_wagon2 = Wagon.new('2', :cargo)
-# passenger_wagon1 = Wagon.new('3', :passenger)
-# passenger_wagon2 = Wagon.new('4', :passenger)
-#
-#
-# train1.train_route(route1)
-# train2.train_route(route1)
-# train3.train_route(route1)
-#
-# train2.moving_forward
-# train1.moving_forward
-# train1.moving_forward
-# train1.moving_forward
-# train1.moving_back
-# train1.moving_back
-# train1.moving_back
-#
-# train.speed
-#
-# train.stop
-# train.speed = 10
-# train.add_wagon(cargo_wagon1)
-# train.add_wagon(passenger_wagon2)
-# train.delete_wagon(cargo_wagon1)
-#
-# train.stop
-# train.add_wagon(cargo_wagon1)
-# train.add_wagon(cargo_wagon1)
-# train3.add_wagon(cargo_wagon1)
-# train.delete_wagon(cargo_wagon1)
+#  train.stop
+#  train.add_wagon(cargo_wagon1)
+#  train.add_wagon(cargo_wagon1)
+#  train3.add_wagon(cargo_wagon1)
+#  train.delete_wagon(cargo_wagon1)
 #
 #
-# train.add_wagon(passenger_wagon2)
-# train1.add_wagon(passenger_wagon2)
-# train.add_wagon(cargo_wagon1)
+#  train.add_wagon(passenger_wagon2)
+#  train1.add_wagon(passenger_wagon2)
+#  train.add_wagon(cargo_wagon1)
 #
+#  train.manufacturer = 'volvo'
 #
+#  puts train.manufacturer
+#
+#  puts Train.find('train')
+#
+#  puts CargoTrain.instances
+#
+#  Station.all
