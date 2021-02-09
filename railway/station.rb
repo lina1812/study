@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require './instance_counter.rb'
+require './validatable.rb'
 
 # All station logic
 class Station
   include InstanceCounter
+  include Validatable
 
   attr_reader :trains, :name
 
@@ -15,11 +17,12 @@ class Station
     @trains = []
     @@stations << self
     register_instance
+    validate!
   end
 
   def take_a_train(train)
     if @trains.include?(train)
-      puts 'Этот поезд уже на станции'
+      raise 'This train is already at the station'
     else
       @trains << train
     end
@@ -29,7 +32,7 @@ class Station
     if @trains.include?(train)
       @trains.delete(train)
     else
-      puts 'Этого поезда нет на станции'
+      raise "This train isn't at the station"
     end
   end
 
@@ -39,5 +42,12 @@ class Station
 
   def trains_by_type(type)
     @trains.select { |train| train.type == type }.count
+  end
+
+  private
+
+  def validate!
+    raise "Station's name can't be nil" if name.nil?
+    raise "Station's name should be at least 2 symbols" if name.length < 2
   end
 end

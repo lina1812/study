@@ -65,19 +65,28 @@ class Menu
     puts 'Введите название станции'
     name = gets.chomp
     @station = Station.new(name)
+  rescue StandardError => e
+    puts e.message
+    retry
   end
 
   def create_train
     puts 'Введите 1 для пассажирского поезда'
     puts 'Введите 2 для грузового поезда'
     type = gets.chomp.to_i
-    puts 'Введите номер поезда'
-    number = gets.chomp
-    case type
-    when 1
-      @train = PassengerTrain.new(number)
-    when 2
-      @train = CargoTrain.new(number)
+    begin
+      puts 'Введите номер поезда'
+      number = gets.chomp
+      case type
+      when 1
+        @train = PassengerTrain.new(number)
+      when 2
+        @train = CargoTrain.new(number)
+      end
+      puts "Поезд номер #{@train.number} типа #{@train.type} был создан"
+    rescue StandardError => e
+      puts e.message
+      retry
     end
   end
 
@@ -92,6 +101,8 @@ class Menu
     finish = Station.all[number - 1]
     @route = Route.new(start, finish)
     @routs << @route
+  rescue StandardError => e
+    puts e.message
   end
 
   def create_wagon
@@ -106,6 +117,8 @@ class Menu
     number = gets.chomp
     @wagon = Wagon.new(number, type)
     @wagons << @wagon
+  rescue StandardError => e
+    puts e.message
   end
 
   def assign_route
@@ -121,6 +134,8 @@ class Menu
     when 2
       del_station_from_route
     end
+  rescue StandardError => e
+    puts e.message
   end
 
   def add_station_to_route
@@ -150,6 +165,8 @@ class Menu
     when 2
       @train.delete_wagon(@wagon)
     end
+  rescue StandardError => e
+    puts e.message
   end
 
   def moving_train
@@ -161,6 +178,8 @@ class Menu
     when 2
       @train.moving_back
     end
+  rescue StandardError => e
+    puts e.message
   end
 
   def select_station
