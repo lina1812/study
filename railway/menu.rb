@@ -8,6 +8,8 @@ require './route.rb'
 require './passenger_train.rb'
 require './cargo_train.rb'
 require './wagon.rb'
+require './passenger_wagon.rb'
+require './cargo_wagon.rb'
 
 # methods for interface
 
@@ -55,6 +57,10 @@ class Menu
         print_stations
       when 14
         list_of_train
+      when 15
+        list_of_wagon
+      when 16
+        wagon_change
       end
     end
   end
@@ -62,7 +68,7 @@ class Menu
   private
 
   def create_station
-    puts 'Введите название станции'
+    puts 'Enter station name'
     name = gets.chomp
     @station = Station.new(name)
   rescue StandardError => e
@@ -71,11 +77,11 @@ class Menu
   end
 
   def create_train
-    puts 'Введите 1 для пассажирского поезда'
-    puts 'Введите 2 для грузового поезда'
+    puts 'Enter 1 for passenger train'
+    puts 'Enter 2 for cargo train'
     type = gets.chomp.to_i
     begin
-      puts 'Введите номер поезда'
+      puts 'Enter train number'
       number = gets.chomp
       case type
       when 1
@@ -83,7 +89,7 @@ class Menu
       when 2
         @train = CargoTrain.new(number)
       end
-      puts "Поезд номер #{@train.number} типа #{@train.type} был создан"
+      puts "Train number #{@train.number} ant type #{@train.type} was created"
     rescue StandardError => e
       puts e.message
       retry
@@ -91,11 +97,11 @@ class Menu
   end
 
   def create_route
-    puts 'Введите номер станции из списка для начальной станции'
+    puts 'Enter the station number from the list for the starting station'
     print_stations
     number = gets.chomp.to_i
     start = Station.all[number - 1]
-    puts 'Введите номер станции из списка для конечной станции'
+    puts 'Enter the station number from the list for the end station'
     print_stations
     number = gets.chomp.to_i
     finish = Station.all[number - 1]
@@ -106,19 +112,32 @@ class Menu
   end
 
   def create_wagon
-    puts 'Введите 1 для пассажирского вагона и 2 для грузового вагона'
+    puts 'Enter 1 for a passenger wagon and 2 for a cargo wagon'
     case gets.chomp.to_i
     when 1
-      type = :passenger
+      create_passenger_wagon
     when 2
-      type = :cargo
+      create_cargo_wagon
     end
-    puts 'Введите номер вагона'
-    number = gets.chomp
-    @wagon = Wagon.new(number, type)
     @wagons << @wagon
   rescue StandardError => e
     puts e.message
+  end
+
+  def create_passenger_wagon
+    puts "Enter wagon's number"
+    number = gets.chomp
+    puts 'Enter count of seats'
+    seats = gets.chomp.to_i
+    @wagon = PassengerWagon.new(number, seats)
+  end
+
+  def create_cargo_wagon
+    puts "Enter wagon's number"
+    number = gets.chomp
+    puts 'Enter volume'
+    volume = gets.chomp.to_i
+    @wagon = CargoWagon.new(number, volume)
   end
 
   def assign_route
@@ -126,8 +145,8 @@ class Menu
   end
 
   def route_change
-    puts 'Введите 1 для того чтобы добавить станцию в маршрут'
-    puts 'Введите 2 для того чтобы удалить станцию из маршрута'
+    puts 'Enter 1 to add a station to the route'
+    puts 'Enter 2 to remove a station from the route'
     case gets.chomp.to_i
     when 1
       add_station_to_route
@@ -139,17 +158,17 @@ class Menu
   end
 
   def add_station_to_route
-    puts 'Введите номер станции из списка для начальной станции'
+    puts 'Enter the station number from the list for the new station'
     print_stations
     number = gets.chomp.to_i
     station_name = Station.all[number - 1]
-    puts 'Введите номер станции, на которую ее добавить'
+    puts 'Enter station position number to add it'
     number = gets.chomp.to_i
     @route.add_station(station_name, number)
   end
 
   def del_station_from_route
-    puts 'Введите номер станции из списка для начальной станции'
+    puts 'Enter the station number from the list for the station to be deleted'
     print_stations
     number = gets.chomp.to_i
     station_name = Station.all[number - 1]
@@ -157,8 +176,8 @@ class Menu
   end
 
   def train_change
-    puts 'Введите 1 для того чтобы прицепить выбранный вагон к выбранному поезду'
-    puts 'Введите 2 для того чтобы отцепить выбранный вагон'
+    puts 'Enter 1 to attach the selected wagon to the selected train'
+    puts 'Enter 2 to unhook the selected wagon'
     case gets.chomp.to_i
     when 1
       @train.add_wagon(@wagon)
@@ -170,8 +189,8 @@ class Menu
   end
 
   def moving_train
-    puts 'Введите 1, чтобы передвинуть выбранный поезд на следующую станцию'
-    puts 'Введите 2, чтобы передвинуть выбранный поезд на предыдущую станцию'
+    puts 'Enter 1 to move the selected train to the next station'
+    puts 'Enter 2 to move the selected train to the previous station'
     case gets.chomp.to_i
     when 1
       @train.moving_forward
@@ -183,25 +202,25 @@ class Menu
   end
 
   def select_station
-    puts 'Введите номер станции из списка, которую хотите выбрать'
+    puts 'Enter a station number from the list to select it'
     print_stations
     @station = Station.all[gets.chomp.to_i - 1]
   end
 
   def select_train
-    puts 'Введите номер поезда из списка, который хотите выбрать'
+    puts 'Enter a train number from the list to select it'
     print_trains
     @train = Train.all[gets.chomp.to_i - 1]
   end
 
   def select_route
-    puts 'Введите номер маршрута из списка, который хотите выбрать'
+    puts 'Enter a route number from the list to select it'
     puts @routs.inspect
     @route = @routs[gets.chomp.to_i - 1]
   end
 
   def select_wagon
-    puts 'Введите номер вагона из списка, который хотите выбрать'
+    puts 'Enter a wagon number from the list to select it'
     puts @wagons.inspect
     @wagon = @wagons[gets.chomp.to_i - 1]
   end
@@ -215,36 +234,85 @@ class Menu
   end
 
   def list_of_train
-    puts 'На станции сейчас следующие поезда'
+    puts 'There are trains at the station now'
     Station.all.each do |station|
-      print_trains(station.trains)
+      # print_trains(station.trains)
+      station.each_train { |train| train.print }
     end
   end
 
+  def list_of_wagon
+    @train.each_wagon { |wagon| wagon.print_wagon }
+  end
+
+  def wagon_change
+    if @wagon.type == :passenger
+      change_passenger_wagon
+    else
+      change_cargo_wagon
+    end
+  end
+
+  def change_passenger_wagon
+    puts 'Enter 1 to take a seat'
+    puts 'Enter 2 to free up seat'
+    case gets.chomp.to_i
+    when 1
+      @wagon.take_a_seat
+    when 2
+      @wagon.free_up_seat
+    end
+  end
+
+  def change_cargo_wagon
+    puts 'Enter 1 to take a volume'
+    puts 'Enter 2 to free up volume'
+    case gets.chomp.to_i
+    when 1
+      take_volume
+    when 2
+      free_up_volume
+    end
+  end
+
+  def take_volume
+    puts 'Enter volume'
+    volume = gets.chomp.to_i
+    @wagon.take_a_volume(volume)
+  end
+
+  def free_up_volume
+    puts 'Enter volume'
+    volume = gets.chomp.to_i
+    @wagon.free_up_a_volume(volume)
+  end
+
   def print_actions
-    puts "Сейчас выбран поезд #{@train.number}" if @train
-    puts "Сейчас выбран маршрут #{@route.stations}" if @route
-    puts "Сейчас выбран вагон #{@wagon.number}" if @wagon
-    puts 'Введите 0, для выхода'
+    puts "Now selected train #{@train.number}" if @train
+    puts "Now selected route #{@route.stations}" if @route
+    puts "Now selected wagon #{@wagon.number}" if @wagon
+    puts 'Enter 0 to exit'
 
-    puts 'Введите 1, если хотите создать станцию'
-    puts 'Введите 2, если хотите создать поезд'
-    puts 'Введите 3, если хотите создать маршрут'
-    puts 'Введите 4, если хотите создать вагон'
+    puts 'Enter 1 to create a station'
+    puts 'Enter 2 to create a train'
+    puts 'Enter 3 to create a route'
+    puts 'Enter 4 to create a wagon'
 
-    puts 'Введите 5, если хотите назначить выбранный маршрут выбранному поезду'
-    puts 'Введите 6, если хотите добавить или удалить станцию'
-    puts 'Введите 7, если хотите прицепить или отцепить вагон к поезду'
-    puts 'Введите 8, если хотите передвинуть поезд'
+    puts 'Enter 5 to assign the selected route to the selected train'
+    puts 'Enter 6 to add or remove a station'
+    puts 'Enter 7 to attach or unhitch the wagon to the train'
+    puts 'Enter 8 to move the train'
 
-    puts 'Введите 9, чтобы сменить выбранный станцию'
-    puts 'Введите 10, чтобы сменить выбранный поезд'
-    puts 'Введите 11, чтобы сменить выбранный маршрут'
-    puts 'Введите 12, чтобы сменить выбранный вагон'
+    puts 'Enter 9 to change the selected station'
+    puts 'Enter 10 to change the selected train'
+    puts 'Enter 11 to change the selected route'
+    puts 'Enter 12 to change the selected wagon'
 
-    puts 'Введите 13, чтобы посмотреть все станции'
-    puts 'Введите 14, чтобы посмотеть поезда на выбранной станции'
-    puts 'Выберите вариант: '
+    puts 'Enter 13 to print all stations'
+    puts 'Enter 14 to print trains at the selected station'
+    puts 'Enter 15 to print a list of wagons for the selected train'
+    puts 'Enter 16 to changing the wagon'
+    puts 'Choose number: '
   end
 end
 
