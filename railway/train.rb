@@ -97,8 +97,6 @@ class Train
   end
 
   def each_wagon
-    puts 'in each'
-    puts @wagons.count
     @wagons.each do |wagon|
       yield(wagon)
     end
