@@ -2,15 +2,17 @@
 
 require './manufacturer.rb'
 require './instance_counter.rb'
+require './validatable.rb'
 
 # All train logic
 class Train
   include Manufacturer
   include InstanceCounter
+  include Validatable
 
   attr_accessor :speed
   attr_reader :route, :current_station, :type, :number, :wagons
-
+  VALID_NUMBER = /^[a-z1-9]{3}-?[a-z1-9]{2}$/i.freeze
   @@trains = []
 
   def initialize(number)
@@ -19,6 +21,7 @@ class Train
     @wagons = []
     @speed = 0
     @@trains << self
+    validate!
   end
 
   def stop
@@ -27,29 +30,29 @@ class Train
 
   def add_wagon(wagon)
     if @speed != 0
-      puts 'Поезд движется'
+      raise 'Поезд движется'
     elsif wagon.train == self
-      puts 'Вагон уже прицеплен к этому поезду'
+      raise 'Вагон уже прицеплен к этому поезду'
     elsif !wagon.train.nil?
-      puts 'Вагон прицеплен к другому поезду'
+      raise 'Вагон прицеплен к другому поезду'
     elsif wagon.type == type
       @wagons << wagon
       wagon.train = self
-      puts 'Вагон прицеплен'
+      true
     else
-      puts 'У вагона и поезда не совпадают типы'
+      raise 'У вагона и поезда не совпадают типы'
     end
   end
 
   def delete_wagon(wagon)
     if @speed != 0
-      puts 'Поезд движется'
+      raise 'Поезд движется'
     elsif @wagons.include?(wagon)
       @wagons.delete(wagon)
       wagon.train = nil
-      puts 'Вагон отцеплен'
+      true
     else
-      puts 'Такого вагона нет в поезде'
+      raise 'Такого вагона нет в поезде'
     end
   end
 
@@ -71,13 +74,11 @@ class Train
   end
 
   def next_station
-    route_next = @route.next_station(current_station)
-    route_next || puts('Поезд на конечной станции')
+    @route.next_station(current_station)
   end
 
   def previous_station
-    route_previous = @route.previous_station(current_station)
-    route_previous || puts('Поезд на начальной станции')
+    @route.previous_station(current_station)
   end
 
   def self.find(number)
@@ -92,7 +93,7 @@ class Train
     puts "Номер поезда: #{number}"
     puts "Тип поезда: #{type}"
     puts "Маршрут поезда: #{route}" if @route
-    puts "Вагоны поезда: #{wagons.map { |wagon| wagon.number }}" if @wagons
+    puts "Вагоны поезда: #{wagons.map(&:number)}" if @wagons
   end
 
   private
@@ -100,10 +101,15 @@ class Train
   # метод moving_to используется для перемещения вагона на определенную станцию
   # так как мы не можем перепрыгивать через станции я убрала его в private
   def moving_to(station)
-    puts station
     @current_station&.send_a_train(self)
     @current_station = station
     @current_station.take_a_train(self)
     true
+  end
+
+  def validate!
+    raise "Train number can't be nil" if number.nil?
+    raise 'Number has invalid format' if number !~ VALID_NUMBER
+    raise "Train type can't be nil" if type.nil?
   end
 end
