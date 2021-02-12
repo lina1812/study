@@ -13,17 +13,17 @@ class PassengerWagon < Wagon
   end
 
   def take_a_seat
-    if @occupied_seats < seats
-      @occupied_seats += 1
-      @free_seats = - 1
-    end
+    return unless @occupied_seats < seats
+
+    @occupied_seats += 1
+    @free_seats = - 1
   end
 
   def free_up_a_seat
-    if @occupied_seats > 0
-      @occupied_seats -= 1
-      @free_seats += 1
-    end
+    return unless @occupied_seats > 0
+
+    @occupied_seats -= 1
+    @free_seats += 1
   end
 
   def print_wagon

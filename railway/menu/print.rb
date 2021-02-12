@@ -18,12 +18,12 @@ class Menu
       puts 'There are trains at the station now'
       Station.all.each do |station|
         # print_trains(station.trains)
-        station.each_train { |train| train.print }
+        station.each_train(&:print)
       end
     end
 
     def list_of_wagon
-      @train.each_wagon { |wagon| wagon.print_wagon }
+      @train.each_wagon(&:print_wagon)
     end
 
     def print_actions

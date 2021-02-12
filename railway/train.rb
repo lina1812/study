@@ -13,7 +13,10 @@ class Train
   attr_accessor :speed
   attr_reader :route, :current_station, :type, :number, :wagons
   VALID_NUMBER = /^[a-z1-9]{3}-?[a-z1-9]{2}$/i.freeze
+
+  # rubocop:disable Style/ClassVars
   @@trains = []
+  # rubocop:enable Style/ClassVars
 
   def initialize(number)
     @number = number
@@ -29,31 +32,23 @@ class Train
   end
 
   def add_wagon(wagon)
-    if @speed != 0
-      raise 'The train is moving'
-    elsif wagon.train == self
-      raise 'The wagon is already attached to this train'
-    elsif !wagon.train.nil?
-      raise 'The wagon is hitched to another train'
-    elsif wagon.type == type
-      @wagons << wagon
-      wagon.train = self
-      true
-    else
-      raise 'The type of the wagon and the train does not match'
-    end
+    raise 'The train is moving' if @speed != 0
+    raise 'The wagon is already attached to this train' if wagon.train == self
+    raise 'The wagon is hitched to another train' unless wagon.train.nil?
+    raise 'The type of the wagon and the train does not match' if wagon.type != type
+
+    @wagons << wagon
+    wagon.train = self
+    true
   end
 
   def delete_wagon(wagon)
-    if @speed != 0
-      raise 'The train is moving'
-    elsif @wagons.include?(wagon)
-      @wagons.delete(wagon)
-      wagon.train = nil
-      true
-    else
-      raise 'There is no such carriage on the train'
-    end
+    raise 'The train is moving' if @speed != 0
+    raise 'There is no such carriage on the train' unless @wagons.include?(wagon)
+
+    @wagons.delete(wagon)
+    wagon.train = nil
+    true
   end
 
   def train_route(route)
