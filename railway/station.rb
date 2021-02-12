@@ -44,10 +44,16 @@ class Station
     @trains.select { |train| train.type == type }.count
   end
 
+  def each_train
+    @trains.each do |train|
+      yield(train)
+    end
+  end
+
   private
 
   def validate!
-    raise "Station's name can't be nil" if name.nil?
+    raise "Station's name can't be nil" unless name
     raise "Station's name should be at least 2 symbols" if name.length < 2
   end
 end

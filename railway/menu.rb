@@ -2,12 +2,25 @@
 
 # require files
 
-require './train.rb'
 require './station.rb'
 require './route.rb'
+
+require './train.rb'
 require './passenger_train.rb'
 require './cargo_train.rb'
+
 require './wagon.rb'
+require './passenger_wagon.rb'
+require './cargo_wagon.rb'
+
+require './menu/create_object.rb'
+require './menu/select_object.rb'
+
+require './menu/change_route.rb'
+require './menu/change_train.rb'
+require './menu/change_wagon.rb'
+
+require './menu/print.rb'
 
 # methods for interface
 
@@ -20,6 +33,13 @@ class Menu
     @wagon = nil
     @wagons = []
   end
+
+  include CreateObject
+  include SelectObject
+  include ChangeRoute
+  include ChangeTrain
+  include ChangeWagon
+  include Print
 
   def main_loop
     loop do
@@ -55,196 +75,12 @@ class Menu
         print_stations
       when 14
         list_of_train
+      when 15
+        list_of_wagon
+      when 16
+        wagon_change
       end
     end
-  end
-
-  private
-
-  def create_station
-    puts 'Введите название станции'
-    name = gets.chomp
-    @station = Station.new(name)
-  rescue StandardError => e
-    puts e.message
-    retry
-  end
-
-  def create_train
-    puts 'Введите 1 для пассажирского поезда'
-    puts 'Введите 2 для грузового поезда'
-    type = gets.chomp.to_i
-    begin
-      puts 'Введите номер поезда'
-      number = gets.chomp
-      case type
-      when 1
-        @train = PassengerTrain.new(number)
-      when 2
-        @train = CargoTrain.new(number)
-      end
-      puts "Поезд номер #{@train.number} типа #{@train.type} был создан"
-    rescue StandardError => e
-      puts e.message
-      retry
-    end
-  end
-
-  def create_route
-    puts 'Введите номер станции из списка для начальной станции'
-    print_stations
-    number = gets.chomp.to_i
-    start = Station.all[number - 1]
-    puts 'Введите номер станции из списка для конечной станции'
-    print_stations
-    number = gets.chomp.to_i
-    finish = Station.all[number - 1]
-    @route = Route.new(start, finish)
-    @routs << @route
-  rescue StandardError => e
-    puts e.message
-  end
-
-  def create_wagon
-    puts 'Введите 1 для пассажирского вагона и 2 для грузового вагона'
-    case gets.chomp.to_i
-    when 1
-      type = :passenger
-    when 2
-      type = :cargo
-    end
-    puts 'Введите номер вагона'
-    number = gets.chomp
-    @wagon = Wagon.new(number, type)
-    @wagons << @wagon
-  rescue StandardError => e
-    puts e.message
-  end
-
-  def assign_route
-    @train.train_route(@route)
-  end
-
-  def route_change
-    puts 'Введите 1 для того чтобы добавить станцию в маршрут'
-    puts 'Введите 2 для того чтобы удалить станцию из маршрута'
-    case gets.chomp.to_i
-    when 1
-      add_station_to_route
-    when 2
-      del_station_from_route
-    end
-  rescue StandardError => e
-    puts e.message
-  end
-
-  def add_station_to_route
-    puts 'Введите номер станции из списка для начальной станции'
-    print_stations
-    number = gets.chomp.to_i
-    station_name = Station.all[number - 1]
-    puts 'Введите номер станции, на которую ее добавить'
-    number = gets.chomp.to_i
-    @route.add_station(station_name, number)
-  end
-
-  def del_station_from_route
-    puts 'Введите номер станции из списка для начальной станции'
-    print_stations
-    number = gets.chomp.to_i
-    station_name = Station.all[number - 1]
-    @route.delete_station(station_name)
-  end
-
-  def train_change
-    puts 'Введите 1 для того чтобы прицепить выбранный вагон к выбранному поезду'
-    puts 'Введите 2 для того чтобы отцепить выбранный вагон'
-    case gets.chomp.to_i
-    when 1
-      @train.add_wagon(@wagon)
-    when 2
-      @train.delete_wagon(@wagon)
-    end
-  rescue StandardError => e
-    puts e.message
-  end
-
-  def moving_train
-    puts 'Введите 1, чтобы передвинуть выбранный поезд на следующую станцию'
-    puts 'Введите 2, чтобы передвинуть выбранный поезд на предыдущую станцию'
-    case gets.chomp.to_i
-    when 1
-      @train.moving_forward
-    when 2
-      @train.moving_back
-    end
-  rescue StandardError => e
-    puts e.message
-  end
-
-  def select_station
-    puts 'Введите номер станции из списка, которую хотите выбрать'
-    print_stations
-    @station = Station.all[gets.chomp.to_i - 1]
-  end
-
-  def select_train
-    puts 'Введите номер поезда из списка, который хотите выбрать'
-    print_trains
-    @train = Train.all[gets.chomp.to_i - 1]
-  end
-
-  def select_route
-    puts 'Введите номер маршрута из списка, который хотите выбрать'
-    puts @routs.inspect
-    @route = @routs[gets.chomp.to_i - 1]
-  end
-
-  def select_wagon
-    puts 'Введите номер вагона из списка, который хотите выбрать'
-    puts @wagons.inspect
-    @wagon = @wagons[gets.chomp.to_i - 1]
-  end
-
-  def print_stations
-    Station.all.each.with_index(1) { |station, i| puts "#{i} #{station.name}" }
-  end
-
-  def print_trains(trains = Train.all)
-    trains.each { |train| puts train.number }
-  end
-
-  def list_of_train
-    puts 'На станции сейчас следующие поезда'
-    Station.all.each do |station|
-      print_trains(station.trains)
-    end
-  end
-
-  def print_actions
-    puts "Сейчас выбран поезд #{@train.number}" if @train
-    puts "Сейчас выбран маршрут #{@route.stations}" if @route
-    puts "Сейчас выбран вагон #{@wagon.number}" if @wagon
-    puts 'Введите 0, для выхода'
-
-    puts 'Введите 1, если хотите создать станцию'
-    puts 'Введите 2, если хотите создать поезд'
-    puts 'Введите 3, если хотите создать маршрут'
-    puts 'Введите 4, если хотите создать вагон'
-
-    puts 'Введите 5, если хотите назначить выбранный маршрут выбранному поезду'
-    puts 'Введите 6, если хотите добавить или удалить станцию'
-    puts 'Введите 7, если хотите прицепить или отцепить вагон к поезду'
-    puts 'Введите 8, если хотите передвинуть поезд'
-
-    puts 'Введите 9, чтобы сменить выбранный станцию'
-    puts 'Введите 10, чтобы сменить выбранный поезд'
-    puts 'Введите 11, чтобы сменить выбранный маршрут'
-    puts 'Введите 12, чтобы сменить выбранный вагон'
-
-    puts 'Введите 13, чтобы посмотреть все станции'
-    puts 'Введите 14, чтобы посмотеть поезда на выбранной станции'
-    puts 'Выберите вариант: '
   end
 end
 

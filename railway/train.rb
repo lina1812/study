@@ -30,29 +30,29 @@ class Train
 
   def add_wagon(wagon)
     if @speed != 0
-      raise 'Поезд движется'
+      raise 'The train is moving'
     elsif wagon.train == self
-      raise 'Вагон уже прицеплен к этому поезду'
+      raise 'The wagon is already attached to this train'
     elsif !wagon.train.nil?
-      raise 'Вагон прицеплен к другому поезду'
+      raise 'The wagon is hitched to another train'
     elsif wagon.type == type
       @wagons << wagon
       wagon.train = self
       true
     else
-      raise 'У вагона и поезда не совпадают типы'
+      raise 'The type of the wagon and the train does not match'
     end
   end
 
   def delete_wagon(wagon)
     if @speed != 0
-      raise 'Поезд движется'
+      raise 'The train is moving'
     elsif @wagons.include?(wagon)
       @wagons.delete(wagon)
       wagon.train = nil
       true
     else
-      raise 'Такого вагона нет в поезде'
+      raise 'There is no such carriage on the train'
     end
   end
 
@@ -90,10 +90,16 @@ class Train
   end
 
   def print
-    puts "Номер поезда: #{number}"
-    puts "Тип поезда: #{type}"
-    puts "Маршрут поезда: #{route}" if @route
-    puts "Вагоны поезда: #{wagons.map(&:number)}" if @wagons
+    puts "Train number: #{number}"
+    puts "Train type: #{type}"
+    # puts "Маршрут поезда: #{route}" if @route
+    puts "Train wagons: #{wagons.count}" if @wagons
+  end
+
+  def each_wagon
+    @wagons.each do |wagon|
+      yield(wagon)
+    end
   end
 
   private
@@ -108,7 +114,7 @@ class Train
   end
 
   def validate!
-    raise "Train number can't be nil" if number.nil?
+    raise "Train number can't be nil" unless number
     raise 'Number has invalid format' if number !~ VALID_NUMBER
     raise "Train type can't be nil" if type.nil?
   end

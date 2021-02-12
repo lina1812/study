@@ -17,21 +17,21 @@ class Route
 
   def add_station(station, place)
     if @stations.include?(station)
-      raise 'Такая станция уже есть в маршруте'
+      raise 'Such a station is already on the route'
     elsif place != 0 && place < @stations.size
       @stations.insert(place, station)
     else
-      raise 'Нельзя добавить станцию на эту позицию'
+      raise "Can't add a station to this position"
     end
   end
 
   def delete_station(station)
     if [@stations.first, @stations.last].include?(station)
-      raise 'Нельзя удалить начальную или конечную станцию'
+      raise 'Start or Finish Station cannot be deleted'
     elsif @stations.include?(station)
       @stations.delete(station)
     else
-      raise 'Такой станции нет в марштуре'
+      raise 'There is no such station on the route'
     end
   end
 
