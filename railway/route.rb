@@ -16,35 +16,29 @@ class Route
   end
 
   def add_station(station, place)
-    if @stations.include?(station)
-      raise 'Such a station is already on the route'
-    elsif place != 0 && place < @stations.size
-      @stations.insert(place, station)
-    else
-      raise "Can't add a station to this position"
-    end
+    raise 'Such a station is already on the route' if @stations.include?(station)
+    raise "Can't add a station to this position" if place == 0 || place >= @stations.size
+
+    @stations.insert(place, station)
   end
 
   def delete_station(station)
-    if [@stations.first, @stations.last].include?(station)
-      raise 'Start or Finish Station cannot be deleted'
-    elsif @stations.include?(station)
-      @stations.delete(station)
-    else
-      raise 'There is no such station on the route'
-    end
+    raise 'Start or Finish Station cannot be deleted' if [@stations.first, @stations.last].include?(station)
+    raise 'There is no such station on the route' unless @stations.include?(station)
+
+    @stations.delete(station)
   end
 
   def next_station(current_station)
-    if current_station != @stations.last && @stations.include?(current_station)
-      @stations[@stations.index(current_station) + 1]
-    end
+    return unless current_station != @stations.last && @stations.include?(current_station)
+
+    @stations[@stations.index(current_station) + 1]
   end
 
   def previous_station(current_station)
-    if current_station != @stations.first && @stations.include?(current_station)
-      @stations[@stations.index(current_station) - 1]
-    end
+    return unless current_station != @stations.first && @stations.include?(current_station)
+
+    @stations[@stations.index(current_station) - 1]
   end
 
   private

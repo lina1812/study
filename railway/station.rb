@@ -10,7 +10,9 @@ class Station
 
   attr_reader :trains, :name
 
+  # rubocop:disable Style/ClassVars
   @@stations = []
+  # rubocop:enable Style/ClassVars
 
   def initialize(name)
     @name = name
@@ -21,19 +23,15 @@ class Station
   end
 
   def take_a_train(train)
-    if @trains.include?(train)
-      raise 'This train is already at the station'
-    else
-      @trains << train
-    end
+    raise 'This train is already at the station' if @trains.include?(train)
+
+    @trains << train
   end
 
   def send_a_train(train)
-    if @trains.include?(train)
-      @trains.delete(train)
-    else
-      raise "This train isn't at the station"
-    end
+    raise "This train isn't at the station" unless @trains.include?(train)
+
+    @trains.delete(train)
   end
 
   def self.all

@@ -13,11 +13,11 @@ ClassLength:
 Metrics/CyclomaticComplexity:
   Enabled: false
   
-Style/FrozenStringLiteralComment:
-  Enabled: false
-  
 AsciiComments:
   Enabled: false
   
 BlockLength:
   Enabled: false
+  
+Style/NumericPredicate:
+  EnforcedStyle: comparison

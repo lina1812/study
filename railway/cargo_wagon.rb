@@ -18,10 +18,10 @@ class CargoWagon < Wagon
   end
 
   def free_up_a_volume(volume)
-    if @occupied_volume > volume
-      @occupied_volume -= volume
-      @free_volume += volume
-    end
+    return unless @occupied_volume > volume
+
+    @occupied_volume -= volume
+    @free_volume += volume
   end
 
   def print_wagon
