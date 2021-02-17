@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
 require './instance_counter.rb'
-require './validatable.rb'
+require './accessors.rb'
 
 # All route logic
 class Route
   attr_accessor :stations
   include InstanceCounter
-  include Validatable
+  extend Accessors
+
+  attr_accessor_with_history :name, :name2
+  strong_attr_accessor :arg1, Symbol
 
   def initialize(start, finish)
     @stations = [start, finish]

@@ -2,17 +2,21 @@
 
 require './manufacturer.rb'
 require './instance_counter.rb'
-require './validatable.rb'
+require './validation.rb'
 
 # All train logic
 class Train
   include Manufacturer
   include InstanceCounter
-  include Validatable
+  include Validation
 
   attr_accessor :speed
   attr_reader :route, :current_station, :type, :number, :wagons
   VALID_NUMBER = /^[a-z1-9]{3}-?[a-z1-9]{2}$/i.freeze
+
+  validate :number, :presence
+  validate :number, :format, VALID_NUMBER
+  validate :type, :presence
 
   # rubocop:disable Style/ClassVars
   @@trains = []
@@ -108,9 +112,9 @@ class Train
     true
   end
 
-  def validate!
-    raise "Train number can't be nil" unless number
-    raise 'Number has invalid format' if number !~ VALID_NUMBER
-    raise "Train type can't be nil" if type.nil?
-  end
+  #  def validate!
+  #    raise "Train number can't be nil" unless number
+  #    raise 'Number has invalid format' if number !~ VALID_NUMBER
+  #    raise "Train type can't be nil" if type.nil?
+  #  end
 end

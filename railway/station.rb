@@ -1,18 +1,22 @@
 # frozen_string_literal: true
 
 require './instance_counter.rb'
-require './validatable.rb'
+require './validation.rb'
 
 # All station logic
 class Station
   include InstanceCounter
-  include Validatable
+  include Validation
 
   attr_reader :trains, :name
 
   # rubocop:disable Style/ClassVars
   @@stations = []
   # rubocop:enable Style/ClassVars
+  VALID_NAME = /.+/i.freeze
+
+  validate :name, :presence
+  validate :name, :format, VALID_NAME
 
   def initialize(name)
     @name = name
@@ -46,12 +50,5 @@ class Station
     @trains.each do |train|
       yield(train)
     end
-  end
-
-  private
-
-  def validate!
-    raise "Station's name can't be nil" unless name
-    raise "Station's name should be at least 2 symbols" if name.length < 2
   end
 end
